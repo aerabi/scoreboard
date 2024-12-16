@@ -1,16 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
+import { ScoresRepository } from './scores.repository';
 import { Score } from './score.model';
 
 @Injectable()
 export class ScoresService {
-  private scores: Score[] = [];
+  constructor(@Inject(ScoresRepository) private readonly scoresRepository: ScoresRepository) {}
 
   store(score: Score): void {
-    this.scores.push(score);
+    this.scoresRepository.store(score);
   }
 
   retrieve(): Score[] {
-    const scoresByEmail = this.scores.reduce((acc, score) => {
+    const allScores = this.scoresRepository.retrieve();
+    const scoresByEmail = allScores.reduce((acc, score) => {
       if (!acc[score.email] || acc[score.email].score < score.score) {
         acc[score.email] = score;
       }

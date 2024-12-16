@@ -10,7 +10,16 @@ describe('ScoresController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ScoresController],
-      providers: [ScoresService],
+      providers: [
+        ScoresService,
+        {
+          provide: ScoresService,
+          useValue: {
+            store: jest.fn(),
+            retrieve: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
     controller = module.get<ScoresController>(ScoresController);
@@ -24,6 +33,12 @@ describe('ScoresController', () => {
   it('should create a score', () => {
     const score: Score = { id: 1, email: 'batman@jl.com', score: 100 };
     controller.create(score);
-    expect(service.retrieve()).toEqual([score]);
+    expect(service.store).toHaveBeenCalledWith(score);
+  });
+
+  it('should retrieve all scores', () => {
+    const scores: Score[] = [{ id: 1, email: 'batman@jl.com', score: 100 }];
+    (service.retrieve as jest.Mock).mockReturnValue(scores);
+    expect(controller.findAll()).toEqual(scores);
   });
 });
