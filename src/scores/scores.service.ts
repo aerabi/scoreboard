@@ -5,11 +5,11 @@ import { Score } from './score.model';
 export class ScoresService {
   private scores: Score[] = [];
 
-  store(score: Score) {
+  store(score: Score): void {
     this.scores.push(score);
   }
 
-  retrieve() {
+  retrieve(): Score[] {
     const scoresByEmail = this.scores.reduce((acc, score) => {
       if (!acc[score.email] || acc[score.email].score < score.score) {
         acc[score.email] = score;
